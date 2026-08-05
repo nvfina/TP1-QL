@@ -32,37 +32,7 @@ public class GestionRendezVous {
             throw new IllegalArgumentException("La date est obligatoire");
         }
 
-        double prix;
-        if (type.equals("GENERALISTE")) {
-            prix = 5000;
-        } else if (type.equals("SPECIALISTE")) {
-            prix = 10000;
-        } else if (type.equals("URGENCE")) {
-            prix = 15000;
-        } else {
-            throw new IllegalArgumentException("Type de consultation inconnu: " + type);
-        }
-
-        LocalDate d = LocalDate.parse(date);
-        if (d.getDayOfWeek() == DayOfWeek.SATURDAY || d.getDayOfWeek() == DayOfWeek.SUNDAY) {
-            if (type.equals("GENERALISTE")) {
-                prix = prix + prix * 0.2;
-            } else if (type.equals("SPECIALISTE")) {
-                prix = prix + prix * 0.2;
-            } else if (type.equals("URGENCE")) {
-                prix = prix + prix * 0.2;
-            }
-        }
-
-        if (estVip) {
-            if (type.equals("GENERALISTE")) {
-                prix = prix - prix * 0.1;
-            } else if (type.equals("SPECIALISTE")) {
-                prix = prix - prix * 0.1;
-            } else if (type.equals("URGENCE")) {
-                prix = prix - prix * 0.1;
-            }
-        }
+        double prix = calculerPrix(type, date, estVip);
 
         // Réduction dégressive : à partir du 2e rendez-vous du même patient le même jour
         if (nombreRendezVous(patient, date) >= 1){
@@ -95,38 +65,7 @@ public class GestionRendezVous {
                 String type = r[1];
                 boolean vip = Boolean.parseBoolean(r[3]);
                 String date = r[2];
-
-                double prix;
-                if (type.equals("GENERALISTE")) {
-                    prix = 5000;
-                } else if (type.equals("SPECIALISTE")) {
-                    prix = 10000;
-                } else if (type.equals("URGENCE")) {
-                    prix = 15000;
-                } else {
-                    prix = 0;
-                }
-
-                LocalDate d = LocalDate.parse(date);
-                if (d.getDayOfWeek() == DayOfWeek.SATURDAY || d.getDayOfWeek() == DayOfWeek.SUNDAY) {
-                    if (type.equals("GENERALISTE")) {
-                        prix = prix + prix * 0.2;
-                    } else if (type.equals("SPECIALISTE")) {
-                        prix = prix + prix * 0.2;
-                    } else if (type.equals("URGENCE")) {
-                        prix = prix + prix * 0.2;
-                    }
-                }
-
-                if (vip) {
-                    if (type.equals("GENERALISTE")) {
-                        prix = prix - prix * 0.1;
-                    } else if (type.equals("SPECIALISTE")) {
-                        prix = prix - prix * 0.1;
-                    } else if (type.equals("URGENCE")) {
-                        prix = prix - prix * 0.1;
-                    }
-                }
+                double prix = calculerPrix(type, date, vip);
 
                 total = total + prix;
             }
@@ -155,4 +94,33 @@ public class GestionRendezVous {
     // Écrivez d'abord le test dans GestionRendezVousTest (RED), faites-le
     // passer avec le code le plus simple possible (GREEN), puis nettoyez
     // (REFACTOR) en gardant tous les tests verts.
+
+    private double calculerPrix(String type, String date, boolean estVip) {
+
+        double prix;
+
+        if (type.equals("GENERALISTE")) {
+            prix = 5000;
+        } else if (type.equals("SPECIALISTE")) {
+            prix = 10000;
+        } else if (type.equals("URGENCE")) {
+            prix = 15000;
+        } else {
+            throw new IllegalArgumentException("Type de consultation inconnu: " + type);
+        }
+
+        LocalDate d = LocalDate.parse(date);
+
+        if (d.getDayOfWeek() == DayOfWeek.SATURDAY ||
+                d.getDayOfWeek() == DayOfWeek.SUNDAY) {
+
+            prix = prix + prix * 0.2;
+        }
+
+        if (estVip) {
+            prix = prix - prix * 0.1;
+        }
+
+        return prix;
+    }
 }
