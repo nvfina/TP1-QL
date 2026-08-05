@@ -75,6 +75,9 @@ que le test détecte bien l'absence de la nouvelle règle.
    existants.
 
 
+Ensuite, pendant la phase GREEN,on ajoute la logique nécessaire dans la
+couche métier pour appliquer la réduction de 15 %,ce qui permet au test
+de réussir.
 
 3. **REFACTOR** - maintenant que vous avez un filet de tests complet,
    nettoyez. C'est le moment de repérer la duplication entre

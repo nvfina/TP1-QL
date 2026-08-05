@@ -64,6 +64,11 @@ public class GestionRendezVous {
             }
         }
 
+        // Réduction dégressive : à partir du 2e rendez-vous du même patient le même jour
+        if (nombreRendezVous(patient, date) >= 1){
+            prix = prix - prix * 0.15;
+        }
+
 
         rendezVous.add(new String[]{patient, type, date, String.valueOf(estVip), String.valueOf(prix)});
 
