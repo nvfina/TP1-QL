@@ -84,6 +84,19 @@ de réussir.
    `ajouterRendezVous` et `calculerTotalFacture` : la logique de tarif y est
    recopiée quasiment à l'identique.
 
+Dans cette étape, nous avons identifié une duplication de la logique de 
+calcul du tarif présente dans les méthodes ajouterRendezVous() et 
+calculerTotalFacture(). Pour respecter le principe DRY (Don't Repeat Yourself), 
+on a extrait cette logique dans une méthode unique appelée calculerPrix(), 
+responsable du calcul du tarif de base, de la majoration du week-end et 
+de la réduction VIP. Les deux méthodes utilisent désormais cette fonction 
+commune, ce qui évite la répétition du code et facilite les futures 
+évolutions des règles tarifaires. La réduction dégressive de 15 % reste 
+dans ajouterRendezVous() car elle dépend du contexte du patient et du 
+nombre de rendez-vous déjà enregistrés. Après cette modification, 
+les tests restent verts, ce qui confirme que le comportement de l'application 
+n'a pas changé malgré l'amélioration de la qualité interne du code.
+
 Faites un commit Git séparé à chaque étape (RED, GREEN, REFACTOR) : c'est ce
 qui sera vérifié.
 
@@ -99,12 +112,44 @@ Poursuivez le refactoring jusqu'à obtenir une classe par responsabilité :
 - L'**orchestration** (validation + calcul + stockage), séparée de
   l'affichage
 
+Dans cette étape de refactoring, on a restructuré le code afin de respecter 
+le principe de responsabilité unique (SRP) et d'améliorer la maintenabilité de 
+l'application. On a séparé le type de consultation et son tarif de base dans la 
+classe `TypeConsultation`, ce qui permet de modifier un tarif sans impacter les 
+autres parties du système. La logique de calcul du prix, comprenant la majoration 
+du weekend, la réduction VIP et la réduction dégressive, a été déplacée dans la 
+classe `CalculateurTarif` afin de supprimer la duplication du code et de respecter 
+le principe DRY (Don't Repeat Yourself). La gestion de la liste des rendez-vous a 
+été isolée dans la classe `StockageRendezVous`, qui est uniquement responsable de 
+l'ajout, de la suppression et de la recherche des rendez-vous. Enfin, la classe 
+`GestionRendezVous` a été conservée comme classe d'orchestration : elle assure la 
+validation des données, coordonne le calcul du tarif et l'enregistrement des 
+rendez-vous, tandis que l'affichage a été déplacé dans une classe dédiée 
+`AfficheurRendezVous`. Cette nouvelle organisation permet d'obtenir un code plus clair, 
+plus facile à faire évoluer et qui respecte les principes de conception vus dans le cours.
+
+
 ## Étape 5 - Couverture de code
 
 Relancez `mvn test` et ouvrez `target/site/jacoco/index.html`. Visez au
 moins 70–80 % sur vos classes de logique métier. Une classe à 0 % est-elle
 forcément un problème ? Justifiez dans le rapport (indice : relisez la
 nuance du chapitre 1 sur la couverture).
+
+![img.png](img.png)
+
+Après l'exécution de mvn test, le rapport JaCoCo montre une couverture globale de 75 % 
+des instructions, ce qui respecte l'objectif fixé entre 70 et 80 %. La couverture des 
+lignes est satisfaisante avec 91 lignes couvertes. La couverture des branches est plus 
+faible (56 %) car certains chemins conditionnels comme les cas d'erreur ou certaines 
+règles métier particulières ne sont pas tous testés. Cependant, une couverture de code 
+élevée ne garantit pas l'absence de défauts : elle indique seulement quelles parties 
+du code ont été exécutées pendant les tests. Une classe avec 0 % de couverture n'est 
+pas forcément un problème si elle contient uniquement des éléments difficiles à tester 
+directement (par exemple une classe de données ou une classe responsable uniquement du 
+stockage). L'objectif est de vérifier que les parties critiques contenant la logique 
+métier sont correctement testées.
+
 
 ## Étape 6 - Rapport qualité
 
